@@ -2,12 +2,16 @@ package models
 
 import (
 	"errors"
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 )
+
+const secret = "wangxso_secret_key"
 
 type User struct {
 	BaseModel
@@ -16,6 +20,7 @@ type User struct {
 	Password string `json:"password"`
 	Fullname string `json:"fullname"`
 	Avatar   string `json:"avatar"`
+	Roles    string `json:"roles"`
 	CreateAt time.Time
 	UpdateAt time.Time
 }
@@ -47,7 +52,50 @@ func (u *User) GenerateJWTToken() (string, error) {
 			Issuer:    "blog_app",
 		},
 	})
-	return token.SignedString([]byte("wangxso_secret_key"))
+	return token.SignedString([]byte(secret))
+}
+
+// 解析token
+func (u *User) CheckToken(authHeader string) (jwt.MapClaims, error) {
+	tokenString := strings.Split(authHeader, " ")[1]
+
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok { // 判断token的加密方式是否为HMAC
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(secret), nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid { // 判断token是否有效
+		return claims, nil
+	} else {
+		return nil, errors.New("Invalid token")
+	}
+}
+
+func (u *User) GetUserIDFromCLaims(claims jwt.MapClaims) (uint, error) {
+	userID, ok := claims["UserID"].(int64)
+	if !ok {
+		return 0, errors.New("user id not found in claims")
+	}
+	return uint(userID), nil
+}
+
+func (u *User) CheckUserHasRole(claims jwt.MapClaims, role string) bool {
+	roles, ok := claims["Roles"].([]interface{})
+	if !ok {
+		return false
+	}
+	for _, r := range roles {
+		if r == role {
+			return true
+		}
+	}
+	return false
 }
 
 func CreateUser(u *User) error {

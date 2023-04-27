@@ -54,3 +54,9 @@ func (s *BlogService) CreateComment(blogID uint, comment *models.Comment) error 
 func (s *BlogService) DeleteComment(id uint) error {
 	return models.DeleteCommentByID(id)
 }
+
+// 分页查询博客列表
+func (s *BlogService) ListBlogsByPage(page uint, size uint) (*[]models.Blog, error) {
+	blogs, err := models.GetBlogsByPage(page, size)
+	return &blogs, err
+}

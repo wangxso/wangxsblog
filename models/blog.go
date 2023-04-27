@@ -50,3 +50,21 @@ func DeleteBlogByID(id uint) error {
 	}
 	return nil
 }
+
+// 分页查询博客列表
+func GetBlogsByPage(page, size uint) ([]Blog, error) {
+	var blogs []Blog
+	// 判断 page 和 size 是否为 0
+	if page == 0 {
+		page = 1
+	}
+	if size == 0 {
+		size = 10
+	}
+
+	err := db.Preload("Comments").Limit(size).Offset(page).Find(&blogs).Error
+	if err != nil {
+		return nil, err
+	}
+	return blogs, nil
+}

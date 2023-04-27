@@ -12,6 +12,7 @@ func TestBlogCreate(t *testing.T) {
 	user, err := models.FindUserByEmail("wangxs@ww.com")
 	if err != nil {
 		log.Fatal(err)
+		t.Fail()
 	}
 
 	blog := &models.Blog{

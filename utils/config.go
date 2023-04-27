@@ -24,7 +24,8 @@ type Config struct {
 
 func GetConfig() (*Config, error) {
 	config := Config{}
-	file, err := os.Open("/Users/wangxs/wangxsoblog/config/config.yaml")
+	// 访问配置文件
+	file, err := os.Open("C:\\Users\\admin\\wangxsblog\\config\\config.yaml")
 	if err != nil {
 		return nil, err
 	}
