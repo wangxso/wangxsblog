@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"fmt"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/wangxso/wangxsoblog/controller"
@@ -10,9 +10,10 @@ import (
 var BlogController = &controller.BlogController{}
 
 func SetupApiRoutes(r *gin.Engine) {
-	r.GET("/api/xxx", func(ctx *gin.Context) {
-		fmt.Println("test")
+	r.GET("/api/test", func(ctx *gin.Context) {
+		ctx.JSON(http.StatusOK, gin.H{"data": "ok"})
 	})
 
 	r.GET("/api/blog", BlogController.ListBlogs)
+	r.POST("/api/blog", BlogController.CreateBlog)
 }
