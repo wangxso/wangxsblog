@@ -43,11 +43,12 @@ func (ctrl *BlogController) CreateBlog(c *gin.Context) {
 
 // 分页查询博客列表
 func (ctrl *BlogController) ListBlogsByPage(c *gin.Context) {
-	var blogs *[]models.Blog
+	var blogs *models.BlogsResponse
 	var err error
-	page := c.Param("page")
-	size := c.Param("size")
+	page := c.Query("page")
+	size := c.Query("size")
 	// page 转换为 uint
+
 	pageNum, err := strconv.ParseUint(page, 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -55,6 +56,10 @@ func (ctrl *BlogController) ListBlogsByPage(c *gin.Context) {
 	}
 	// size 转换为 uint
 	sizeNum, err := strconv.ParseUint(size, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 	blogs, err = ctrl.s.ListBlogsByPage(uint(pageNum), uint(sizeNum))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

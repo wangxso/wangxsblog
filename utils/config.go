@@ -3,6 +3,7 @@ package utils
 import (
 	"io"
 	"os"
+	"runtime"
 
 	"gopkg.in/yaml.v2"
 )
@@ -25,7 +26,13 @@ type Config struct {
 func GetConfig() (*Config, error) {
 	config := Config{}
 	// 访问配置文件
-	file, err := os.Open("C:\\Users\\admin\\wangxsblog\\config\\config.yaml")
+	var path string
+	if runtime.GOOS == "windows" {
+		path = "C:\\Users\\admin\\wangxsblog\\config\\config.yaml"
+	} else if runtime.GOOS == "darwin" {
+		path = "/Users/wangxs/wangxsoblog/config/config.yaml"
+	}
+	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}

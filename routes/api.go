@@ -14,6 +14,7 @@ func SetupApiRoutes(r *gin.Engine) {
 		ctx.JSON(http.StatusOK, gin.H{"data": "ok"})
 	})
 
-	r.GET("/api/blog", BlogController.ListBlogs)
+	r.GET("/api/blog", BlogController.ListBlogsByPage)
 	r.POST("/api/blog", BlogController.CreateBlog)
+
 }

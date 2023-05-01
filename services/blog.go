@@ -1,6 +1,8 @@
 package services
 
 import (
+	"math"
+
 	"github.com/jinzhu/gorm"
 	"github.com/wangxso/wangxsoblog/models"
 )
@@ -56,7 +58,14 @@ func (s *BlogService) DeleteComment(id uint) error {
 }
 
 // 分页查询博客列表
-func (s *BlogService) ListBlogsByPage(page uint, size uint) (*[]models.Blog, error) {
+func (s *BlogService) ListBlogsByPage(page uint, size uint) (*models.BlogsResponse, error) {
 	blogs, err := models.GetBlogsByPage(page, size)
-	return &blogs, err
+	totalCount := models.GetBlogCount()
+	totalPage := (math.Ceil(float64(totalCount)) / float64(size))
+	blogResp := &models.BlogsResponse{
+		Blogs:      blogs,
+		TotalCount: totalCount,
+		TotalPage:  int(totalPage),
+	}
+	return blogResp, err
 }

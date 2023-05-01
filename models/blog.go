@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 type Blog struct {
 	BaseModel
@@ -11,6 +13,12 @@ type Blog struct {
 	Comments []Comment `json:"comments"`
 	CreateAt time.Time
 	UpdateAt time.Time
+}
+
+type BlogsResponse struct {
+	TotalCount int64
+	TotalPage  int
+	Blogs      []Blog
 }
 
 func CreateBlog(blog *Blog) error {
@@ -61,10 +69,19 @@ func GetBlogsByPage(page, size uint) ([]Blog, error) {
 	if size == 0 {
 		size = 10
 	}
-
-	err := db.Preload("Comments").Limit(size).Offset(page).Find(&blogs).Error
+	offset := (page - 1) * size
+	err := db.Preload("Comments").Limit(size).Offset(offset).Find(&blogs).Error
 	if err != nil {
 		return nil, err
 	}
 	return blogs, nil
+}
+
+func GetBlogCount() int64 {
+	var count int64
+	err := db.Model(&Blog{}).Count(&count).Error
+	if err != nil {
+		return 0
+	}
+	return count
 }
