@@ -8,6 +8,7 @@ import (
 )
 
 var BlogController = &controller.BlogController{}
+var UserController = &controller.UserController{}
 
 func SetupApiRoutes(r *gin.Engine) {
 	r.GET("/api/test", func(ctx *gin.Context) {
@@ -16,5 +17,5 @@ func SetupApiRoutes(r *gin.Engine) {
 
 	r.GET("/api/blog", BlogController.ListBlogsByPage)
 	r.POST("/api/blog", BlogController.CreateBlog)
-
+	r.POST("/api/login", UserController.Login)
 }

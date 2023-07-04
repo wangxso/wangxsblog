@@ -23,6 +23,7 @@ func (ctrl *BlogController) ListBlogs(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": blogs})
 }
 
+// 创建博客
 func (ctrl *BlogController) CreateBlog(c *gin.Context) {
 	var blog models.Blog
 

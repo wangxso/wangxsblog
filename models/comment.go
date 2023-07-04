@@ -43,3 +43,12 @@ func DeleteCommentByID(id uint) error {
 	}
 	return nil
 }
+
+func ListCommentsByBlogId(blogId string) ([]Comment, error) {
+	var comments []Comment
+	err := db.Where("blog_id = ?", blogId).Find(&comments).Error
+	if err != nil {
+		return nil, err
+	}
+	return comments, nil
+}
